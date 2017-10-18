@@ -15,4 +15,4 @@ DATABASES = {
     }
 }
 
-# STATICFILES_DIRS = [BASE_DIR.child("static"),]
+STATIC_ROOT=os.path.join(BASE_DIR, '_build', 'static')
