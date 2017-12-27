@@ -50,6 +50,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third party apps
+    'rest_framework',
+    'rest_framework.authtoken',
+    # Internal apps
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -85,6 +90,12 @@ WSGI_APPLICATION = 'geppetto.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -126,3 +137,5 @@ STATIC_URL = '/static/'
 SITE_PAGES_DIRECTORY = BASE_DIR.child("static").child('pages')
 
 STATICFILES_DIRS = [BASE_DIR.child("static"),]
+
+print("[Geppetto] Base Setting Loading")
