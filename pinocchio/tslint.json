@@ -120,13 +120,13 @@
     "directive-selector": [
       true,
       "attribute",
-      "app",
+      "gpt",
       "camelCase"
     ],
     "component-selector": [
       true,
       "element",
-      "app",
+      "gpt",
       "kebab-case"
     ],
     "no-output-on-prefix": true,
