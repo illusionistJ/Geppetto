@@ -11,23 +11,31 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import configparser
+import logging
 
-from django.core.exceptions import ImproperlyConfigured
 from unipath import Path
 
+LOGGER = logging.getLogger(__name__)
 
-def get_env_variable(var_name):
+
+def get_env_variable(var_name, default_value):
     try:
         return os.environ[var_name]
     except KeyError:
-        error_msg = "set the {} environment variable".format(var_name)
-        raise ImproperlyConfigured(error_msg)
+        LOGGER.info("There is no key named '%s'. so we use default configure" % var_name)
+        return default_value
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).ancestor(2)
-# STATIC_ROOT = BASE_DIR.child("static")
 
+# Config Loader
+config = configparser.RawConfigParser()
+config.read(get_env_variable("conf", ("%s/config.ini" % str(BASE_DIR.parent.child("conf")))))
+
+log_config = configparser.RawConfigParser()
+log_config.read(get_env_variable("log", ("%s/log.ini" % str(BASE_DIR.parent.child("conf")))))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -49,10 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    # Third party apps
-    'rest_framework',
-    'rest_framework.authtoken',
+    # 'django.contrib.staticfiles',
     # Internal apps
     'user',
 ]
@@ -69,21 +74,21 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR.child("templates"),],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
+# TEMPLATES = [
+#     {
+#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+#         'DIRS': [BASE_DIR.child("templates"),],
+#         'APP_DIRS': True,
+#         'OPTIONS': {
+#             'context_processors': [
+#                 'django.template.context_processors.debug',
+#                 'django.template.context_processors.request',
+#                 'django.contrib.auth.context_processors.auth',
+#                 'django.contrib.messages.context_processors.messages',
+#             ],
+#         },
+#     },
+# ]
 
 WSGI_APPLICATION = 'geppetto.application'
 
@@ -133,9 +138,45 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
-SITE_PAGES_DIRECTORY = BASE_DIR.child("static").child('pages')
+# STATIC_URL = '/static/'
+# SITE_PAGES_DIRECTORY = BASE_DIR.child("static").child('pages')
+#
+# STATICFILES_DIRS = [BASE_DIR.child("static"),]
 
-STATICFILES_DIRS = [BASE_DIR.child("static"),]
-
-print("[Geppetto] Base Setting Loading")
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': log_config['Default']['format']
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'h',
+            'interval': 1,
+            'backupCount': 5,
+            'filename': str(BASE_DIR.parent)+log_config['Default']['filename'],
+            'formatter': 'standard'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': log_config['Django']['level'],
+            'propagate': True,
+        },
+        'geppetto': {
+            'handlers': ['console', 'file'],
+            'level': log_config['Default']['level'],
+            'propagate': True,
+        },
+    },
+}
