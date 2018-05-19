@@ -95,8 +95,13 @@ WSGI_APPLICATION = 'geppetto.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': config['Database']['name'],
+        'USER': config['Database']['user'],
+        'PASSWORD': config['Database']['password'],
+        'HOST': config['Database']['host'],
+        'PORT': config['Database']['port'],
+        # 'CONN_MAX_AGE': config['Database']['conn_max_age'],
     }
 }
 
