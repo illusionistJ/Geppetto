@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { MatNavList } from '@angular/material'
 
 
 import { AppComponent } from './app.component';
@@ -12,7 +13,7 @@ import { UserModule } from './user/user.module';
     AppComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule,MatNavList,
 
     /* App Modules */
     MainModule, UserModule
